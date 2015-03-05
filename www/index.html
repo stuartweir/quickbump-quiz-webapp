@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>quick &bull; bump</title>
+
+    <script src='extern/js/jquery-1.9.1.min.js'></script>
+    <script src='extern/js/bootstrap.min.js'></script>
+    <script src='extern/js/underscore-min.js'></script>
+    <script src='extern/js/backbone-min.js'></script>
+    <script src='extern/js/d3.v3.min.js'></script>
+
+    <script src='js/tangocolors.js'></script>
+    <script src='js/base.js'></script>
+    <script src='js/choicelist.js'></script>
+    <script src='js/createquestion.js'></script>
+    <script src='js/answerquestion.js'></script>
+    <script src='js/graph.js'></script>
+    <script src='js/viewquestion.js'></script>
+    <script src='js/main.js'></script>
+
+    <link href='extern/css/font-awesome.min.css' rel='stylesheet'>
+    <link href='extern/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='css/style.css' type='text/css' rel='stylesheet'>
+
+    <script type='text/underscore-template' for='loading'>
+        <center class='loading-screen'>
+            <i class="icon-spin icon-refresh"></i>Loading...
+        </center>
+    </script>
+
+    <script type='text/underscore-template' for='404'>
+        <h2>Page does not exist</h2>
+        <p>
+        </p>
+    </script>
+    
+    <script type='text/underscore-template' for='landing'>
+        <center>
+            Select an option above
+        </center>
+    </script>
+
+    <script type='text/underscore-template' for='choiceitem'>
+        <input class='value-edit span4' type='text'>
+    </script>
+
+    <script type='text/underscore-template' for='newquestion'>
+        <form>
+            <div class='btn-group mode-btns' data-toggle='buttons-radio'>
+                <button type='button' value=2 class='btn btn-info'
+                    >Short Answer</button>
+                <button type='button' value=1 class='btn btn-info active'
+                    >Multiple Choice</button>
+                <button type='button' value=4 class='btn btn-info'
+                    >Configurable</button>
+            </div>
+
+                <label for='Question'>Question</label>
+                <input type='text' name='Question' class='bigfield' />
+
+                <div class='choice-only'>
+                    <label for='MinChoices'>Minimum Choices</label>
+                    <input type='number' name='MinChoices' step=1 />
+                    <label for='MaxChoices'>Maximum Choices</label>
+                    <input type='number' name='MaxChoices' step=1 />
+
+                    <label>Choices</label>
+                    <div id='choicelist' />
+
+                </div>
+
+                <div class='text-only'>
+                    <label for='WordLimit'>Word Limit</label>
+                    <input type='number' name='WordLimit' step=1 />
+                    <label for='CharLimit'>Character Limit</label>
+                    <input type='number' name='CharLimit' step=1 />
+                </div>
+
+                <p id='errorbox' class='alert alert-error'></p>
+
+                <hr>
+                <button type='submit' id='submit-question' class='btn'>Submit</button>
+            </form>
+        </center>    
+    </script>
+
+    <script type='text/underscore-template' for='viewquestion'>
+        <div id='errorbox'></div>
+        <div id='questioninfo'></div>
+        <div id='graphcontainer'></div>
+        <div id='answerheader'></div>
+        <div id='answerlist'></div>
+        
+    </script>
+
+    <script type='text/underscore-template' for='errorbox'>
+        <div class='alert alert-error'>
+            <strong>Error! Status Code <%- code %></strong>: <%- message %>
+        </div>
+    </script>
+
+    <script type='text/underscore-template' for='questioninfo'>
+        <h2><%- question.Data.Info.Question %> </h2>
+        <p><b>Question Identifier:</b> <%- qid %></p>
+        <p><b>Created:</b> <%- format_date(question.Created) %></p>
+        <p><a href='/qr/?<%- encodeURIComponent(
+                window.location.protocol + '' + window.location.host + '/#answer/' + qid)
+            %>'
+            class='qrbtn modal-image-display' alt='QR Code'><i class='icon-qrcode'></i></a></p>
+    </script>
+
+    <script type='text/underscore-template' for='answerheader'>
+        <h3><%- Object.keys(answers).length %> <%- Object.keys(answers).length == 1 ? "answer" : "answers" %></h3>
+    </script>
+
+    <script type='text/underscore-template' for='answerlist'>   
+        <div class='answerdate'><%- format_date(answer.Created) %></div>
+        <div class='answertext'>
+        <%- question.Data.Mode == TextMode ?
+                answer.Response :
+                answer.Response && answer.Response.length ?
+                    answer.Response.map(function(e){ return question.Data.Info.Choices[e]; }) :
+                    "No choices selected"
+            %>
+        </div>
+    </script>
+
+    <script type='text/underscore-template' for='answer-choicequestioninfo'>
+        <h2><%- question.Data.Info.Question %> </h2>
+        <p><b>Question Identifier:</b> <%- qid %></p>
+        <p><b>Created:</b> <%- format_date(question.Created) %></p>
+        <p><b>Minimum Choices:</b> <%- question.Data.Info.MinChoices %></p>
+        <p><b>Maximum Choices:</b> <%- question.Data.Info.MaxChoices %></p>
+    </script>
+    <script type='text/underscore-template' for='answer-textquestioninfo'>
+        <h2><%- question.Data.Info.Question %> </h2>
+        <p><b>Question Identifier:</b> <%- qid %></p>
+        <p><b>Created:</b> <%- format_date(question.Created) %></p>
+        <p><b>Word Limit:</b> <%- question.Data.Info.WordLimit %></p>
+        <p><b>Character Limit:</b> <%- question.Data.Info.CharLimit %></p>
+    </script>
+
+    <script type='text/underscore-template' for='answerquestion'>
+        <div id='errorbox'></div>
+        <form>
+            <div class='text-only'>
+                <div id='answer-textquestioninfo' />
+
+                <label for='text-response'>Response</label>
+                <textarea class='bigfield' id='text-response' rows=5 />
+            </div>
+
+            <div class='choice-only'>
+                <div id='answer-choicequestioninfo' />
+
+                <label>Choices</label>
+                <div id='choicelist'></div>
+            </div>
+
+            <div id='validation-errorbox' class='alert alert-error'></div>
+            <hr>
+            <button type='submit' id='submit-question' class='btn'>Submit</button>
+        </form>
+    </script>
+
+</head>
+<body>
+    <div id='navheader' class='navbar'>
+        <div class='navbar-inner'>
+            <div class='brand'>
+                <a href='#'><img src='images/logo.png'></a>
+                <span class='sitetitle'>quick &bull; bump</span>
+            </div>
+
+            <form class='navbar-form pull-right'>
+                <a class='btn' href='#/new'>Create a Question</a>
+or
+                <div class='input-append'>
+                        <input class='' name='target-question' type='text'
+                            placeholder='Question Identifier' />
+                    <button id='post-an-answer-btn' class='btn' type='button'>Post an Answer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

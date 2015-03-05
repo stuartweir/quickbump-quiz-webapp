@@ -1,0 +1,130 @@
+/* Base */
+body {
+    padding: 5px;
+}
+h1, h2, h3, h4 {
+    border-bottom: 1px solid #d3d7cf;
+}
+
+#logo {
+    position: absolute;
+    bottom: 10px;
+}
+
+#navheader .sitetitle {
+    vertical-align: middle;
+}
+#navheader .navbar-form {
+    padding: 10px 20px;
+}
+#navheader .input-append {
+    margin: 0;
+}
+#navheader .btn {
+    margin: 0;
+}
+
+#landing {
+    padding: 40px 8px;
+    font-size: 2em;
+}
+
+.bigfield {
+    width: 100%;
+}
+
+/* bootstrap is dumb ... */
+input.invalid {
+    border-color: #ef2929;
+}
+input.invalid:focus {
+    border-color: #cc0000;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #cc0000;
+       -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #cc0000;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #cc0000;
+}
+#errorbox ul {
+    margin-bottom: 0;
+}
+
+/* Answer/Choice List */
+#choicelist {
+    margin-bottom: 20px;
+}
+#choicelist > .choiceitem  {
+}
+#choicelist > .choiceitem > * {
+}
+#choicelist > .choiceitem .value-edit {
+}
+#choicelist > .choiceitem .btn {
+    width: 20px;
+}
+
+/* Question Create */
+#newquestion {
+    max-width: 400px;
+    margin: auto;
+}
+.mode-btns {
+    margin-bottom: 20px;
+}
+
+/* Answer Create */
+#answerquestion {
+    max-width: 400px;
+    margin: auto;
+}
+
+#answerquestion #choicelist > .choiceitem .value-edit[readonly] {
+    cursor: auto;
+    background-color: #fff;
+}
+
+/* Question View */
+#questioninfo .qrbtn {
+    font-size: 2em;
+}
+#graphcontainer {
+    padding: 0 20px;
+}
+.graph {
+    display: table;
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 2em;
+}
+.graph .line {
+    display: table-row;
+}
+.graph .line > * {
+    vertical-align: top;
+    padding-bottom: 10px;
+}
+.graph .bar {
+    padding: 0px;
+    padding-left: 5px; /* todo, padding is sketchy */
+    _color: white;
+    border: 1px solid #d3d7cf;
+}
+.graph .barwrapper {
+    display: table-cell;
+}
+.graph .graph-label {
+    display: table-cell;
+
+    font-style: italic;
+    width: 50%;
+    padding: 0 10px;
+    text-align: right;
+}
+#answerlist > div {
+    border-top: 1px solid #eeeeec;
+    padding: 10px 0;
+}
+#answerlist > div:first-child {
+    border: 0;
+}
+#answerlist div .answerdate {
+    float: right;
+}
